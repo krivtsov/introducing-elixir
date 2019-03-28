@@ -19,6 +19,15 @@ defmodule Drop do
     :world
   end
 
+  def drop do
+    receive do
+      {from, planemo, distance} ->
+        send(from, {planemo, distance, fall_velocity(planemo, distance)})
+        drop()
+    end
+    
+  end
+
   # def fall_velocity(distance) do
   #   import :math, only: [sqrt: 1]
     
@@ -46,21 +55,25 @@ defmodule Drop do
     sqrt(2 * gravity * distance)
   end
 
-  def fall_velocity3({planemo, distance}) when distance >= 0 do
+  def fall_velocity3({planemo, distance}) do # when distance >= 0 do
     gravity = case planemo do
       :earth  -> 9.8
       :moon   -> 1.6
       :mars   -> 3.71
     end
-    velocity = sqrt(2 * gravity * distance)
-
-    cond do
-      velocity == 0                    -> :stable
-      velocity < 5                     -> :slow
-      velocity >= 5 and velocity < 10  -> :moving
-      velocity >= 10 and velocity < 20 -> :moving
-      velocity >= 20                   -> :speedy
+    try do
+      sqrt(2 * gravity * distance)
+    rescue 
+      error -> error
     end
+
+    # cond do
+    #   velocity == 0                    -> :stable
+    #   velocity < 5                     -> :slow
+    #   velocity >= 5 and velocity < 10  -> :moving
+    #   velocity >= 10 and velocity < 20 -> :moving
+    #   velocity >= 20                   -> :speedy
+    # end
   end
 
 end
